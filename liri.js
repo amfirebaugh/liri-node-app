@@ -1,13 +1,13 @@
 
 // Everything needed to immport and initial configurations:
 require("dotenv").config();
-var fs = require('fs');
-var axios = require('axios');
+var fs = require("fs");
+var axios = require("axios");
 var keys = require("./keys.js");
-var Spotify = require('node-spotify-api');
+var Spotify = require("node-spotify-api");
 var spotify = new Spotify(keys.spotify);
-var moment = require('moment');
-// var now = moment();
+var moment = require("moment");
+var now = moment();
 
 // storing command line arguments
 var nodeArg = process.argv;
@@ -33,9 +33,9 @@ switch (nodeArg[2]) {
     case "concert-this":
         concertThis(userInput);
         break;
-    // case "spotify-this-song":   
-    //     spotifyThis(userInput); 
-    //     break;
+    case "spotify-this-song":   
+        spotifyThis(userInput); 
+        break;
     case "do-what-it-says":
         // takes no args
         doWhatItSays();
@@ -51,28 +51,18 @@ switch (nodeArg[2]) {
         process.exit();
     }
 
-// Make it so liri.js can take in one of the following commands:
-
-
-//* `concert-this`
-// `node liri.js concert-this <artist/band name here>`
-
-//    * This will search the Bands in Town Artist Events API (`"https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"`) for an artist and render the following information about each event to the terminal:
-
-//      * Name of the venue
-//      * Venue location
-//      * Date of the Event (use moment to format this as "MM/DD/YYYY")
-
+// concertThis is the function that uses axios to call the Bands in Town Artist Events API, uses the user input, and then prints out information about an upcoming event
 function concertThis(artist) {
     if(!artist) {
         console.log("Please enter an artist or band for this search. In the meantime here is the information for The Lumineers...");
         axios.get("https://rest.bandsintown.com/artists/the+lumineers/events?app_id=codingbootcamp").then(function(response) {
         // getting info from Bands in Town Artist Events API and printing to console...
             var conResp = response.data[0];
+            var concertDate = moment(conResp.datetime).format('MM-DD-YYYY');
             var concertInfoTL = (`
                 Venue Name: ${conResp.venue.name}
                 Venue City: ${conResp.venue.city}
-                Date of this Event: ${conResp.datetime}
+                Date of this Event: ${concertDate}
             `);
             console.log(concertInfoTL);
             process.exit();
@@ -86,10 +76,11 @@ function concertThis(artist) {
         } else {
             // getting info from Bands in Town Artist Events API and printing to console...
             var conResp = response.data[0];
+            var concertDate = moment(conResp.datetime).format('MM-DD-YYYY');
             var concertInfo = (`
             Venue Name: ${conResp.venue.name}
             Venue Location: ${conResp.venue.city}, ${conResp.venue.country}
-            Date of this Event: ${conResp.datetime}
+            Date of this Event: ${concertDate}
             `);
             console.log(concertInfo);
             process.exit();
@@ -109,6 +100,7 @@ function concertThis(artist) {
 
 //    * If no song is provided then your program will default to "The Sign" by Ace of Base.
 
+// movieThis is the function that calls the OMDB API based on user input and prints out information about that movie
 function movieThis(movie) {
     if (!movie) {
         console.log("Please enter a movie for this search. In the meantime here is the information for Mr. Nobody...");
