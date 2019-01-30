@@ -7,7 +7,6 @@ var keys = require("./keys.js");
 var Spotify = require("node-spotify-api");
 var spotify = new Spotify(keys.spotify);
 var moment = require("moment");
-var now = moment();
 
 // storing command line arguments
 var nodeArg = process.argv;
@@ -18,11 +17,10 @@ var userInput = "";
 for (var i = 3; i < nodeArg.length; i++) {
     // if nodeArg has index greater than 3, concatinate adding '+' between the words
     if (i > 3 && i < nodeArg.length) {
-        userInput+= '+' + nodeArg[i];
+        userInput += '+' + nodeArg[i];
     } else {
         userInput += nodeArg[i];
     }
-    
 }
 
 // switch statement to evaluate user input
@@ -83,30 +81,35 @@ function concertThis(artist) {
             Date of this Event: ${concertDate}
             `);
             console.log(concertInfo);
-            process.exit();
+            // process.exit();
         }
     });
 }
 
-//* `spotify-this-song`
-// `node liri.js spotify-this-song '<song name here>'`
-
-//    * This will show the following information about the song in your terminal/bash window
-
-//      * Artist(s)
-//      * The song's name
-//      * A preview link of the song from Spotify
-//      * The album that the song is from
-
-//    * If no song is provided then your program will default to "The Sign" by Ace of Base.
-
-
+// spotifyThis is the function that calls the spotify API from the user input to print out information about a song
 function spotifyThis(song) {
     if (!song) {
-        console.log("Please enter a song for this search. In the meantime here is the information for ...");
+        console.log("Please enter a song for this search.");
         process.exit();
+        // I can't get the below code to work but I don't want to give up on it either... I've been digging through the spotify documentation like crazy to try to figure it out, I've tried many variations of the code below for several hours and I'm stuck...might need some help... not sure why this one is so tough...
+
+        // console.log("Please enter a song for this search. In the meantime here is the information for The Sign by Ace of Base...");
+        // spotify.search({ type: 'track', query: 'The Sign' }).then(function(response) {
+        //     var songAB = response.tracks.items;
+        //     console.log(songAB);
+        //     for (var i = 0; i < songAB.length; i++) {
+        //         var songInfoAB = (`
+        //         Song Title: ${songAB[10].name}
+        //         Artist(s): ${songAB[10].artists[0].name}
+        //         Album: ${songAB[10].album.name}
+        //         Preview URL: ${songAB[10].preview_url}
+        //         `);
+        //         console.log(songInfoAB);
+        //     }
+        // });
+        
     }
-    spotify.search({type: "track", query: song}).then(function(response) {
+    spotify.search({type: "track", query: song, limit: 5}).then(function(response) {
         if (response.tracks.items.length === 0) {
             console.log("Sorry, even Spotify couldn't find this song. Please try another song.");
             process.exit();
@@ -121,21 +124,22 @@ function spotifyThis(song) {
             Preview URL: ${song[i].preview_url}
             `);
             console.log(songInfo);
-            // below caps the number of responses to 5 because spotify will give the first 20 or so...it's too many in my opinion!
-            if (i === 4) {
-                break;
-            }
+            // below caps the number of responses to 5 because spotify will give the first 20 or so...it's too many in my opinion! (changed my mind and used the spotify documentation and used limit: 5 in the ajax call)
+            // if (i === 4) {
+            //     break;
+            // }
+            // process.exit();
         }
     }).catch(function(error) {
         console.log(error);
     });
 }
 
-
 // movieThis is the function that calls the OMDB API based on user input and prints out information about that movie
 function movieThis(movie) {
     if (!movie) {
         console.log("Please enter a movie for this search. In the meantime here is the information for Mr. Nobody...");
+        // right now this works sometimes and other times doesn't work and I think it has to do with my process.exit()'s throughout, but the fact that my application works perfectly sometimes and other times will hit some of my user input validation console log's is very confusing... I don't understand what's going on...
         axios.get("http://www.omdbapi.com/?t=Mr+Nobody&y=&plot=short&apikey=c10bfc5e").then(function(response) {
             // getting info from OMDB and printing to console...
             var movieInfoMN = (`
@@ -153,6 +157,7 @@ function movieThis(movie) {
             process.exit();
             });
     }
+        
 
     var queryURL3 = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=c10bfc5e";
 
@@ -176,46 +181,25 @@ function movieThis(movie) {
         Actors: ${response.data.Actors}
         `);
         console.log(movieInfo);
-
+        process.exit();
     });
 }
 
-
-
-
-//* `do-what-it-says`
-// * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
-
-//      * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
-
-//      * Edit the text in random.txt to test out the feature for movie-this and concert-this.
-
+// the doWhatItSays function takes the random.txt file, reads it, and takes the text inside it as input for the functions inside this application so that Liri will work all the same
 function doWhatItSays() {
     
     // read from random.txt
     fs.readFile("random.txt","utf8", function(err, data) {
         var entries = data.split(',');
-        // function call based on random.txt
-        switch (entries[0]) {
-        case "movie-this":
-            movieSearch(entries[1]);
-            break;
-        case "concert-this":
-            bandSearch(entries[1]);
-            break;
-        case "spotify-this-song":   
-            musicSearch(entries[1]); 
-            break;
-        default:
-            console.log("Please use one of the application commands.");
-        }
+        // var entryArray = [];
+        // entryArray.push(entries);
+        // for (var i = 0; i < entries.length; i++) {
+        //     if (entries[i] === "movie-this") {
+        //         movieThis(entries[i+1]);
+        //     }
+        // }
+        // spotifyThis(entries[1]);
+        // movieThis(entries[3]);
+        concertThis(entries[5]);
     }); 
 }
-
-
-
-// ### BONUS
-
-// * In addition to logging the data to your terminal/bash window, output the data to a .txt file called `log.txt`.
-// * Make sure you append each command you run to the `log.txt` file. 
-// * Do not overwrite your file each time you run a command.
