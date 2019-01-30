@@ -100,6 +100,34 @@ function concertThis(artist) {
 
 //    * If no song is provided then your program will default to "The Sign" by Ace of Base.
 
+
+function spotifyThis(song) {
+    if (!song) {
+        console.log("Please enter a song for this search. In the meantime here is the information for ...");
+        process.exit();
+    }
+    spotify.search({type: "track", query: song}).then(function(response) {
+        if (response.tracks.items.length === 0) {
+            console.log("Sorry, even Spotify couldn't find this song. Please try another song.");
+            process.exit();
+        }
+        
+        var song = response.tracks.items;
+        for (var i = 0; i < song.length; i++) {
+            var songInfo = (`
+            Song Title: ${song[i].name}
+            Artist(s): ${song[i].artists[0].name}
+            Album: ${song[i].album.name}
+            Preview URL: ${song[i].preview_url}
+            `);
+            console.log(songInfo);
+        }
+    }).catch(function(error) {
+        console.log(error);
+    });
+}
+
+
 // movieThis is the function that calls the OMDB API based on user input and prints out information about that movie
 function movieThis(movie) {
     if (!movie) {
