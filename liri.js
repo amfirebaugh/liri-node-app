@@ -9,6 +9,48 @@ var spotify = new Spotify(keys.spotify);
 var moment = require('moment');
 // var now = moment();
 
+// storing command line arguments
+var nodeArg = process.argv;
+// initializing the user input as a string
+var userInput = "";
+
+// inspect nodeArg starting at index 3
+for (var i = 3; i < nodeArg.length; i++) {
+    // if nodeArg has index greater than 3, concatinate adding '+' between the words
+    if (i > 3 && i < nodeArg.length) {
+        userInput+= '+' + nodeArg[i];
+    } else {
+        userInput += nodeArg[i];
+    }
+    
+}
+
+// switch statement to evaluate user input
+switch (nodeArg[2]) {
+    case "movie-this":
+        movieThis(userInput);
+        break;
+    case "concert-this":
+        concertThis(userInput);
+        break;
+    // case "spotify-this-song":   
+    //     spotifyThis(userInput); 
+    //     break;
+    case "do-what-it-says":
+        // takes no args
+        doWhatItSays();
+        break;
+    default:
+        console.log('USER INPUT FORMATTING: \n' +
+        '** Type a request using the following examples below as a guide: **' +
+        'node liri concert-this <band name> \n' +
+        'node liri spotify-this-song <song name> \n' +
+        'node liri movie-this <movie name> \n' +
+        'node liri do-what-it-says \n'
+        );
+        process.exit();
+    }
+
 // Make it so liri.js can take in one of the following commands:
 
 
@@ -21,7 +63,39 @@ var moment = require('moment');
 //      * Venue location
 //      * Date of the Event (use moment to format this as "MM/DD/YYYY")
 
-
+function concertThis(artist) {
+    if(!artist) {
+        console.log("Please enter an artist or band for this search. In the meantime here is the information for The Lumineers...");
+        axios.get("https://rest.bandsintown.com/artists/the+lumineers/events?app_id=codingbootcamp").then(function(response) {
+        // getting info from Bands in Town Artist Events API and printing to console...
+            var conResp = response.data[0];
+            var concertInfoTL = (`
+                Venue Name: ${conResp.venue.name}
+                Venue City: ${conResp.venue.city}
+                Date of this Event: ${conResp.datetime}
+            `);
+            console.log(concertInfoTL);
+            process.exit();
+        });
+    }
+    var queryURL1 = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
+    
+    axios.get(queryURL1).then(function(response) {
+        if (response.data.length === 0 || response.data.includes("warn=Not found")) {
+            console.log("No concert information is available for: " + artist + ". Please try another!");
+        } else {
+            // getting info from Bands in Town Artist Events API and printing to console...
+            var conResp = response.data[0];
+            var concertInfo = (`
+            Venue Name: ${conResp.venue.name}
+            Venue Location: ${conResp.venue.city}, ${conResp.venue.country}
+            Date of this Event: ${conResp.datetime}
+            `);
+            console.log(concertInfo);
+            process.exit();
+        }
+    });
+}
 
 //* `spotify-this-song`
 // `node liri.js spotify-this-song '<song name here>'`
@@ -34,28 +108,6 @@ var moment = require('moment');
 //      * The album that the song is from
 
 //    * If no song is provided then your program will default to "The Sign" by Ace of Base.
-
-
-
-//* `movie-this`
-// `node liri.js movie-this '<movie name here>'`
-
-//    * This will output the following information to your terminal/bash window:
-
-//      ```
-//        * Title of the movie.
-//        * Year the movie came out.
-//        * IMDB Rating of the movie.
-//        * Rotten Tomatoes Rating of the movie.
-//        * Country where the movie was produced.
-//        * Language of the movie.
-//        * Plot of the movie.
-//        * Actors in the movie.
-//      ```
-
-//    * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-
-//    * You'll use the `axios` package to retrieve data from the OMDB API. Like all of the in-class activities, the OMDB API requires an API key. You may use `trilogy`.
 
 function movieThis(movie) {
     if (!movie) {
@@ -76,12 +128,11 @@ function movieThis(movie) {
             console.log(movieInfoMN);
             process.exit();
             });
-        
     }
 
-    var queryURL = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=c10bfc5e";
+    var queryURL3 = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=c10bfc5e";
 
-    axios.get(queryURL).then(function(response) {
+    axios.get(queryURL3).then(function(response) {
         if (response.data.Error) {
             console.log(`${response.data.Error}`);
             console.log("Hmm...try another movie title.");
@@ -138,48 +189,6 @@ function doWhatItSays() {
 }
 
 
-
-// test for command line args
-var nodeArg = process.argv;
-
-// declare string as empty or else you get an 'undefined' as first element in array
-var userInput = '';
-
-// inspect nodeArg starting at index 3
-for (var i = 3; i < nodeArg.length; i++) {
-    // if nodeArg has index greater than 3, concatinate adding '+' between the words
-    if (i > 3 && i < nodeArg.length) {
-        userInput+= '+' + nodeArg[i];
-    } else {
-        userInput += nodeArg[i];
-    }
-    
-}
-
-// switch statement to evaluate user input
-switch (nodeArg[2]) {
-    case "movie-this":
-        movieThis(userInput);
-        break;
-    case "concert-this":
-        bandSearch(userInput);
-        break;
-    case "spotify-this-song":   
-        musicSearch(userInput); 
-        break;
-    case "do-what-it-says":
-        // takes no args
-        doWhatItSays();
-        break;
-    default:
-        console.log('SCRIPT USAGE: \n' +
-        'node liri concert-this <band name> \n' +
-        'node liri spotify-this-song <song name> \n' +
-        'node liri movie-this <movie name> \n' +
-        'node liri do-what-it-says \n' +
-        '##### please format your request based on the examples above #####');
-        process.exit();
-    }
 
 // ### BONUS
 
