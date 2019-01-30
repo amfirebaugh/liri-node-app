@@ -121,6 +121,10 @@ function spotifyThis(song) {
             Preview URL: ${song[i].preview_url}
             `);
             console.log(songInfo);
+            // below caps the number of responses to 5 because spotify will give the first 20 or so...it's too many in my opinion!
+            if (i === 4) {
+                break;
+            }
         }
     }).catch(function(error) {
         console.log(error);
