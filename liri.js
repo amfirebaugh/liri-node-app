@@ -57,6 +57,54 @@ var moment = require('moment');
 
 //    * You'll use the `axios` package to retrieve data from the OMDB API. Like all of the in-class activities, the OMDB API requires an API key. You may use `trilogy`.
 
+function movieThis(movie) {
+    if (!movie) {
+        console.log("Please enter a movie for this search. In the meantime here is the information for Mr. Nobody...");
+        axios.get("http://www.omdbapi.com/?t=Mr+Nobody&y=&plot=short&apikey=c10bfc5e").then(function(response) {
+            // getting info from OMDB and printing to console...
+            var movieInfoMN = (`
+            Title: ${response.data.Title}
+            Year: ${response.data.Year}
+            Rated: ${response.data.Rated}
+            IMDB Score: ${response.data.Ratings[0].Value}
+            Rotten Tomatoes Score: ${response.data.Ratings[1].Value}
+            This movie was produced in this country: ${response.data.Country}
+            Languages: ${response.data.Language}
+            Plot: ${response.data.Plot}
+            Actors: ${response.data.Actors}
+            `);
+            console.log(movieInfoMN);
+            process.exit();
+            });
+        
+    }
+
+    var queryURL = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=c10bfc5e";
+
+    axios.get(queryURL).then(function(response) {
+        if (response.data.Error) {
+            console.log(`${response.data.Error}`);
+            console.log("Hmm...try another movie title.");
+            process.exit();
+        }
+
+        // getting info from OMDB and printing to console...
+        var movieInfo = (`
+        Title: ${response.data.Title}
+        Year: ${response.data.Year}
+        Rated: ${response.data.Rated}
+        IMDB Score: ${response.data.Ratings[0].Value}
+        Rotten Tomatoes Score: ${response.data.Ratings[1].Value}
+        This movie was produced in this country: ${response.data.Country}
+        Languages: ${response.data.Language}
+        Plot: ${response.data.Plot}
+        Actors: ${response.data.Actors}
+        `);
+        console.log(movieInfo);
+
+    });
+}
+
 
 
 
@@ -67,7 +115,71 @@ var moment = require('moment');
 
 //      * Edit the text in random.txt to test out the feature for movie-this and concert-this.
 
+function doWhatItSays() {
+    
+    // read from random.txt
+    fs.readFile("random.txt","utf8", function(err, data) {
+        var entries = data.split(',');
+        // function call based on random.txt
+        switch (entries[0]) {
+        case "movie-this":
+            movieSearch(entries[1]);
+            break;
+        case "concert-this":
+            bandSearch(entries[1]);
+            break;
+        case "spotify-this-song":   
+            musicSearch(entries[1]); 
+            break;
+        default:
+            console.log("Please use one of the application commands.");
+        }
+    }); 
+}
 
+
+
+// test for command line args
+var nodeArg = process.argv;
+
+// declare string as empty or else you get an 'undefined' as first element in array
+var userInput = '';
+
+// inspect nodeArg starting at index 3
+for (var i = 3; i < nodeArg.length; i++) {
+    // if nodeArg has index greater than 3, concatinate adding '+' between the words
+    if (i > 3 && i < nodeArg.length) {
+        userInput+= '+' + nodeArg[i];
+    } else {
+        userInput += nodeArg[i];
+    }
+    
+}
+
+// switch statement to evaluate user input
+switch (nodeArg[2]) {
+    case "movie-this":
+        movieThis(userInput);
+        break;
+    case "concert-this":
+        bandSearch(userInput);
+        break;
+    case "spotify-this-song":   
+        musicSearch(userInput); 
+        break;
+    case "do-what-it-says":
+        // takes no args
+        doWhatItSays();
+        break;
+    default:
+        console.log('SCRIPT USAGE: \n' +
+        'node liri concert-this <band name> \n' +
+        'node liri spotify-this-song <song name> \n' +
+        'node liri movie-this <movie name> \n' +
+        'node liri do-what-it-says \n' +
+        '##### please format your request based on the examples above #####');
+        process.exit();
+    }
 
 // ### BONUS
 
