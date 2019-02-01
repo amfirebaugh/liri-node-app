@@ -39,7 +39,7 @@ switch (nodeArg[2]) {
         doWhatItSays();
         break;
     default:
-        console.log('** Type a request using the following examples below as a guide: **' +
+        console.log('** Type a request using the following examples below as a guide: ** \n' +
         'node liri concert-this <band name> \n' +
         'node liri spotify-this-song <song name> \n' +
         'node liri movie-this <movie name> \n' +
