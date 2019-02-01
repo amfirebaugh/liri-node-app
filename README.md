@@ -19,7 +19,7 @@ In the command line you can type "node liri.js", then enter, and the application
 ```
 node liri.js concert-this Creedence Clearwater Revival
 ```
-![Image of concert-this](/images/concertThis_band.jpg)
+![Image of concert-this](./images/concertThis_band.jpg)
 ```
 node liri.js spotify-this-song Bad Moon Rising
 ```
