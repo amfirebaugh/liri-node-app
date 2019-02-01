@@ -40,10 +40,10 @@ switch (nodeArg[2]) {
         break;
     default:
         console.log('** Type a request using the following examples below as a guide: ** \n' +
-        'node liri concert-this <band name> \n' +
-        'node liri spotify-this-song <song name> \n' +
-        'node liri movie-this <movie name> \n' +
-        'node liri do-what-it-says \n'
+        'node liri.js concert-this <band name> \n' +
+        'node liri.js spotify-this-song <song name> \n' +
+        'node liri.js movie-this <movie name> \n' +
+        'node liri.js do-what-it-says \n'
         );
         process.exit();
     }
