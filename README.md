@@ -19,18 +19,34 @@ In the command line you can type "node liri.js", then enter, and the application
 ```
 node liri.js concert-this Creedence Clearwater Revival
 ```
-![Image of concert-this](/images/concertThis_band.JPG)
+![image of concert-this](/images/concertThis_band.JPG)
+
+If you forget to enter an artist or band name here's what will happen:
+
+![image of concert-this noinput](/images/concertThis_noInput.JPG)
+
 ```
 node liri.js spotify-this-song Bad Moon Rising
 ```
+![image of spotify-this-song](/images/spotifyThis_song.JPG)
+
+If you forget to enter a song name here's what will happen:
+
+![image of spotify-this-song noinput](/images/spotifyThis_noInput.JPG)
 
 ```
 node liri.js movie-this Forest Gump
 ```
+![image of movie-this](/images/movieThis_title.JPG)
+
+If you forget to enter a movie title here's what will happen:
+
+![image of movie-this noinput](/images/movieThis_noInput.JPG)
 
 ```
 node liri.js do-what-it-says
 ```
+![image of do-what-it-says default](/images/doWhatItSays_spotify.JPG)
 
 ### Do What It Says
 
@@ -42,3 +58,8 @@ I'm sorry I don't know what to run. Make sure the random.txt file has the correc
     movie-this,"<movie-title>"
     concert-this,<artist/band name (note-without quotations!)>
 ```
+If you correctly change the random.txt file you can get various responses. Here are a few more examples of this function:
+
+![image of do-what-it-says concert](/images/doWhatItSays_concert.JPG)
+
+![image of do-what-it-says movie](/images/doWhatItSays_movie.JPG)
