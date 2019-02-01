@@ -39,8 +39,7 @@ switch (nodeArg[2]) {
         doWhatItSays();
         break;
     default:
-        console.log('USER INPUT FORMATTING: \n' +
-        '** Type a request using the following examples below as a guide: **' +
+        console.log('** Type a request using the following examples below as a guide: **' +
         'node liri concert-this <band name> \n' +
         'node liri spotify-this-song <song name> \n' +
         'node liri movie-this <movie name> \n' +
@@ -191,15 +190,22 @@ function doWhatItSays() {
     // read from random.txt
     fs.readFile("random.txt","utf8", function(err, data) {
         var entries = data.split(',');
-        // var entryArray = [];
-        // entryArray.push(entries);
-        // for (var i = 0; i < entries.length; i++) {
-        //     if (entries[i] === "movie-this") {
-        //         movieThis(entries[i+1]);
-        //     }
-        // }
-        // spotifyThis(entries[1]);
-        // movieThis(entries[3]);
-        concertThis(entries[5]);
+        switch (entries[0]) {
+            case "movie-this":
+                movieThis(entries[1]);
+                break;
+            case "concert-this":
+                concertThis(entries[1]);
+                break;
+            case "spotify-this-song":   
+                spotifyThis(entries[1]); 
+                break;
+            default:
+                console.log(`I'm sorry I don't know what to run. Make sure the random.txt file has the correct formatting. Choose an option below, follow the guide, and insert it into the random.txt file. Then you can run the command line 'node liri.js do-what-it-says to get the proper response.` +
+                `spotify-this-song,"<song title>"` +
+                `movie-this,"<movie-title>"` +
+                `concert-this,<artist/band name (note-without quotations!)>
+                `);
+        }
     }); 
 }
