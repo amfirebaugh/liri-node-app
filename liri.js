@@ -80,7 +80,7 @@ function concertThis(artist) {
             Date of this Event: ${concertDate}
             `);
             console.log(concertInfo);
-            // process.exit();
+            process.exit();
         }
     });
 }
