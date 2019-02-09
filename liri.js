@@ -64,25 +64,26 @@ function concertThis(artist) {
             console.log(concertInfoTL);
             process.exit();
         });
+    } else {
+        var queryURL1 = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
+        
+        axios.get(queryURL1).then(function(response) {
+            if (response.data.length === 0 || response.data.includes("warn=Not found")) {
+                console.log("No concert information is available for: " + artist + ". Please try another!");
+            } else {
+                // getting info from Bands in Town Artist Events API and printing to console...
+                var conResp = response.data[0];
+                var concertDate = moment(conResp.datetime).format('MM-DD-YYYY');
+                var concertInfo = (`
+                Venue Name: ${conResp.venue.name}
+                Venue Location: ${conResp.venue.city}, ${conResp.venue.country}
+                Date of this Event: ${concertDate}
+                `);
+                console.log(concertInfo);
+                process.exit();
+            }
+        });
     }
-    var queryURL1 = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
-    
-    axios.get(queryURL1).then(function(response) {
-        if (response.data.length === 0 || response.data.includes("warn=Not found")) {
-            console.log("No concert information is available for: " + artist + ". Please try another!");
-        } else {
-            // getting info from Bands in Town Artist Events API and printing to console...
-            var conResp = response.data[0];
-            var concertDate = moment(conResp.datetime).format('MM-DD-YYYY');
-            var concertInfo = (`
-            Venue Name: ${conResp.venue.name}
-            Venue Location: ${conResp.venue.city}, ${conResp.venue.country}
-            Date of this Event: ${concertDate}
-            `);
-            console.log(concertInfo);
-            process.exit();
-        }
-    });
 }
 
 // spotifyThis is the function that calls the spotify API from the user input to print out information about a song
@@ -91,47 +92,47 @@ function spotifyThis(song) {
         console.log("Please enter a song for this search.");
         process.exit();
         // I can't get the below code to work but I don't want to give up on it either... I've been digging through the spotify documentation like crazy to try to figure it out, I've tried many variations of the code below for several hours and I'm stuck...might need some help... not sure why this one is so tough...
-
-        // console.log("Please enter a song for this search. In the meantime here is the information for The Sign by Ace of Base...");
-        // spotify.search({ type: 'track', query: 'The Sign' }).then(function(response) {
-        //     var songAB = response.tracks.items;
-        //     console.log(songAB);
-        //     for (var i = 0; i < songAB.length; i++) {
-        //         var songInfoAB = (`
-        //         Song Title: ${songAB[10].name}
-        //         Artist(s): ${songAB[10].artists[0].name}
-        //         Album: ${songAB[10].album.name}
-        //         Preview URL: ${songAB[10].preview_url}
-        //         `);
-        //         console.log(songInfoAB);
-        //     }
-        // });
+        console.log("Please enter a song for this search. In the meantime here is the information for The Sign by Ace of Base...");
+        spotify.search({ type: 'track', query: 'The Sign' }).then(function(response) {
+            var songAB = response.tracks.items;
+            console.log(songAB);
+            for (var i = 0; i < songAB.length; i++) {
+                var songInfoAB = (`
+                Song Title: ${songAB[10].name}
+                Artist(s): ${songAB[10].artists[0].name}
+                Album: ${songAB[10].album.name}
+                Preview URL: ${songAB[10].preview_url}
+                `);
+                console.log(songInfoAB);
+            }
+        });
+    } else {
+        spotify.search({type: "track", query: song, limit: 5}).then(function(response) {
+            if (response.tracks.items.length === 0) {
+                console.log("Sorry, even Spotify couldn't find this song. Please try another song.");
+                process.exit();
+            }
+            
+            var song = response.tracks.items;
+            for (var i = 0; i < song.length; i++) {
+                var songInfo = (`
+                Song Title: ${song[i].name}
+                Artist(s): ${song[i].artists[0].name}
+                Album: ${song[i].album.name}
+                Preview URL: ${song[i].preview_url}
+                `);
+                console.log(songInfo);
+                // below caps the number of responses to 5 because spotify will give the first 20 or so...it's too many in my opinion! (changed my mind and used the spotify documentation and used limit: 5 in the ajax call)
+                // if (i === 4) {
+                //     break;
+                // }
+                // process.exit();
+            }
         
+        }).catch(function(error) {
+            console.log(error);
+        });
     }
-    spotify.search({type: "track", query: song, limit: 5}).then(function(response) {
-        if (response.tracks.items.length === 0) {
-            console.log("Sorry, even Spotify couldn't find this song. Please try another song.");
-            process.exit();
-        }
-        
-        var song = response.tracks.items;
-        for (var i = 0; i < song.length; i++) {
-            var songInfo = (`
-            Song Title: ${song[i].name}
-            Artist(s): ${song[i].artists[0].name}
-            Album: ${song[i].album.name}
-            Preview URL: ${song[i].preview_url}
-            `);
-            console.log(songInfo);
-            // below caps the number of responses to 5 because spotify will give the first 20 or so...it's too many in my opinion! (changed my mind and used the spotify documentation and used limit: 5 in the ajax call)
-            // if (i === 4) {
-            //     break;
-            // }
-            // process.exit();
-        }
-    }).catch(function(error) {
-        console.log(error);
-    });
 }
 
 // movieThis is the function that calls the OMDB API based on user input and prints out information about that movie
@@ -155,33 +156,32 @@ function movieThis(movie) {
             console.log(movieInfoMN);
             process.exit();
             });
-    }
-        
+    } else {
+        var queryURL3 = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=c10bfc5e";
 
-    var queryURL3 = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=c10bfc5e";
+        axios.get(queryURL3).then(function(response) {
+            if (response.data.Error) {
+                console.log(`${response.data.Error}`);
+                console.log("Hmm...try another movie title.");
+                process.exit();
+            }
 
-    axios.get(queryURL3).then(function(response) {
-        if (response.data.Error) {
-            console.log(`${response.data.Error}`);
-            console.log("Hmm...try another movie title.");
+            // getting info from OMDB and printing to console...
+            var movieInfo = (`
+            Title: ${response.data.Title}
+            Year: ${response.data.Year}
+            Rated: ${response.data.Rated}
+            IMDB Score: ${response.data.Ratings[0].Value}
+            Rotten Tomatoes Score: ${response.data.Ratings[1].Value}
+            This movie was produced in this country: ${response.data.Country}
+            Languages: ${response.data.Language}
+            Plot: ${response.data.Plot}
+            Actors: ${response.data.Actors}
+            `);
+            console.log(movieInfo);
             process.exit();
-        }
-
-        // getting info from OMDB and printing to console...
-        var movieInfo = (`
-        Title: ${response.data.Title}
-        Year: ${response.data.Year}
-        Rated: ${response.data.Rated}
-        IMDB Score: ${response.data.Ratings[0].Value}
-        Rotten Tomatoes Score: ${response.data.Ratings[1].Value}
-        This movie was produced in this country: ${response.data.Country}
-        Languages: ${response.data.Language}
-        Plot: ${response.data.Plot}
-        Actors: ${response.data.Actors}
-        `);
-        console.log(movieInfo);
-        process.exit();
-    });
+        });
+    }
 }
 
 // the doWhatItSays function takes the random.txt file, reads it, and takes the text inside it as input for the functions inside this application so that Liri will work all the same
